@@ -6,8 +6,8 @@ from rossmann import Rossmann
 
 # loading model
 #home_path = '/home/brunods/Documents/portfolio_github/the_rossman_projects/models'
-home_path = 'models/'
-model = pickle.load(open(home_path + 'model_rossman.pkl','rb'))
+home_path = 'models'
+model = pickle.load(open(home_path + '/model_rossman.pkl','rb'))
 
 
 # Initialize API
@@ -45,4 +45,4 @@ def rossman_predict():
 
 if __name__ == '__main__':
     port = os.environ.get('PORT', 5000)
-    app.run(host='192.168.0.32', port=port)
+    app.run(host='0.0.0.0', port=port)
