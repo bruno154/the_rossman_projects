@@ -4,23 +4,29 @@ import datetime
 import inflection
 import numpy as np
 import pandas as pd
-import xgboost as xgb
-from sklearn.preprocessing import RobustScaler, MinMaxScaler, LabelEncoder
+from sklearn.preprocessing import MinMaxScaler
+
+
 
 
 class Rossmann(object):
     
     def __init__(self):
-        self.home_path = '/home/brunods/Documents/portfolio/the_rossman_project/'
-        self.competition_distance_scaler = pickle.load(open(self.home_path + '/parameters/competition_distance_scaler.pkl', 'rb'))
-        self.year_scaler                 = pickle.load(open(self.home_path + '/parameters/year_scaler.pkl', 'rb'))
-        self.store_type_scaler           = pickle.load(open(self.home_path + '/parameters/store_type_scaler.pkl', 'rb'))
+        self.home_path = ''
+        #self.home_path = ''
+        self.competition_distance_scaler   = pickle.load(open(self.home_path + 'parameters/competition_distance_scaler.pkl', 'rb'))
+        self.competition_time_month_scaler = pickle.load(open(self.home_path + 'parameters/competition_time_month_scaler.pkl', 'rb'))
+        self.promo_time_week_scaler        = pickle.load(open(self.home_path + 'parameters/promo_time_week_scaler.pkl', 'rb'))
+        self.year_scaler                   = pickle.load(open(self.home_path + 'parameters/year_scaler.pkl', 'rb'))
+        self.store_type_scaler             = pickle.load(open(self.home_path + 'parameters/store_type_scaler.pkl', 'rb'))
         
 
     def data_cleaning(self, df_raw):
         
         # List old cols names
         cols_old = df_raw.columns.to_list()
+        #cols_old.remove('Sales')
+        #cols_old.remove('Customers')
 
         # Lambda function 
         snakecase = lambda x : inflection.underscore(x)
@@ -108,52 +114,49 @@ class Rossmann(object):
         
         return df_feat
 
-    def data_preparation(self, df5):
-
-        # MinMaxScaler / RobustScaler
-        mms = MinMaxScaler(feature_range=(0,1))
+    def data_preparation(self, df_prep):
 
         # competition distance, competition time month, promo time week - RobustScaler
         variaveis = ['competition_distance', 'competition_time_month', 'promo_time_week']
 
         for var in variaveis:
-            df5[var] = self.competition_distance_scaler.fit_transform(np.array(df5[var]).reshape(-1,1))
+            df_prep[var] = self.competition_distance_scaler.fit_transform(np.array(df_prep[var]).reshape(-1,1))
 
         # year
-        df5['year'] = self.year_scaler.fit_transform(np.array(df5['year']).reshape(-1,1))
+        df_prep['year'] = self.year_scaler.fit_transform(np.array(df_prep['year']).reshape(-1,1))
 
         # state_holiday - One Hot Encoding
-        df5 = pd.get_dummies(df5, prefix=['state_holiday'], columns=['state_holiday'])
+        df_prep = pd.get_dummies(df_prep, prefix=['state_holiday'], columns=['state_holiday'])
 
         # store_type - Label Encoding
-        df5['store_type'] = self.store_type_scaler.fit_transform(df5['store_type'])
+        df_prep['store_type'] = self.store_type_scaler.fit_transform(df_prep['store_type'])
 
 
         # assortment - Ordinal Encoding
         assortment_dict = {'basic' : 1, 'extra': 2, 'extended': 3}
-        df5['assortment'] = df5['assortment'].map(assortment_dict)
+        df_prep['assortment'] = df_prep['assortment'].map(assortment_dict)
 
 
-        # Nature TRansfomation due ciclical nature of variables
+        # Nature Transfomation due ciclical nature of variables
         clic_vars = ['day_of_week', 'day', 'month', 'week_of_year']
 
 
         for var in clic_vars:
             if var == 'month':
-                df5[str(var)+'_sin'] = df5[var].apply( lambda x: np.sin(x *(2. * np.pi/12)))
-                df5[str(var)+'_cos'] = df5[var].apply( lambda x: np.cos(x *(2. * np.pi/12)))
+                df_prep[str(var)+'_sin'] = df_prep[var].apply( lambda x: np.sin(x *(2. * np.pi/12)))
+                df_prep[str(var)+'_cos'] = df_prep[var].apply( lambda x: np.cos(x *(2. * np.pi/12)))
 
             elif var == 'day':
-                df5[str(var)+'_sin'] = df5[var].apply( lambda x: np.sin(x *(2. * np.pi/30)))
-                df5[str(var)+'_cos'] = df5[var].apply( lambda x: np.cos(x *(2. * np.pi/30)))
+                df_prep[str(var)+'_sin'] = df_prep[var].apply( lambda x: np.sin(x *(2. * np.pi/30)))
+                df_prep[str(var)+'_cos'] = df_prep[var].apply( lambda x: np.cos(x *(2. * np.pi/30)))
 
             elif var == 'day_of_week':
-                df5[str(var)+'_sin'] = df5[var].apply( lambda x: np.sin(x *(2. * np.pi/7)))
-                df5[str(var)+'_cos'] = df5[var].apply( lambda x: np.cos(x *(2. * np.pi/7)))
+                df_prep[str(var)+'_sin'] = df_prep[var].apply( lambda x: np.sin(x *(2. * np.pi/7)))
+                df_prep[str(var)+'_cos'] = df_prep[var].apply( lambda x: np.cos(x *(2. * np.pi/7)))
 
             else:
-                df5[str(var)+'_sin'] = df5[var].apply( lambda x: np.sin(x *(2. * np.pi/52)))
-                df5[str(var)+'_cos'] = df5[var].apply( lambda x: np.cos(x *(2. * np.pi/52)))
+                df_prep[str(var)+'_sin'] = df_prep[var].apply( lambda x: np.sin(x *(2. * np.pi/52)))
+                df_prep[str(var)+'_cos'] = df_prep[var].apply( lambda x: np.cos(x *(2. * np.pi/52)))
                 
         # feature selection
         cols_selected = ['store',
@@ -173,12 +176,10 @@ class Rossmann(object):
                          'day_sin',
                          'day_cos',
                          'month_cos',
-                         'month_sin',
-                         'week_of_year_sin',
                          'week_of_year_cos']
                 
         
-        return df5[cols_selected]
+        return df_prep[cols_selected]
     
     def get_prediction(self, model, original_data, test_data):
         
