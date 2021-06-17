@@ -1,63 +1,75 @@
 # The_Rossman_Project
 
-## Prediction of the next 6 weeks sales
-
 #### This project was made by Bruno Vinicius.
 
 # 1. Business Problem.
+The CEO would like a solution with Machine Learning in order to have easy access to the revenue of the next 6 weeks.
 
-# 2. Business Assumptions.
+Solution Idea:
 
-# 3. Solution Strategy
+A Telegram bot were the CEO could suply the store number and receive back the predictions of the sales.
+
+# 2. Solution Strategy
 
 My strategy to solve this challenge was:
 
-**Step 01. Data Description:**
+**Step 00. Imports and Helper Functions:**
 
-**Step 02. Feature Engineering:**
+**Step 01. Data Colection:**
 
-**Step 03. Data Filtering:**
+**Step 02. Data Cleaning:**
 
-**Step 04. Exploratory Data Analysis:**
+**Step 03. Hypothesis Map:**
 
-**Step 05. Data Preparation:**
+**Step 04. Feature Engineering:**
 
-**Step 06. Feature Selection:**
+**Step 05. EDA(Exploratory Data Analysis):**
 
-**Step 07. Machine Learning Modelling:**
+**Step 06. Data Preparation:**
 
-**Step 08. Hyperparameter Fine Tunning:**
+**Step 07. Feature Selection:**
 
-**Step 09. Convert Model Performance to Business Values:**
+**Step 08. Machine Learning:**
 
-**Step 10. Deploy Modelo to Production:**
+**Step 09. Hyperparameter Tunning:**
+
+**Step 10. Convert Model Performance to Business Values:**
+
+**Step 11. Deploy Model to Production:**
 
 # 4. Top 3 Data Insights
 
 **Hypothesis 01:**
-
-**True/False.**
+Stores with more assortment should sell more.
+**False.**
 
 **Hypothesis 02:**
-
-**True/False.**
+Stores with competitors near to them sell any less.
+**False.**
 
 **Hypothesis 03:**
-
-**True/False.**
+Stores with more promotions actives should sell more.
+**False.**
 
 # 5. Machine Learning Model Applied
+In this project was applied the models.
+    
+    -  Average Model (as baseline model)
+    -  Linear Regression
+    -  Lasso
+    -  Random Forest
+    -  Xgboost
+    -  Lightgbm
 
 # 6. Machine Learning Modelo Performance
+The chosen model was the Lightgbm due to its performance and size.
+
+    - RMSE:1297,29 +/- 183,9
+    - MAPE:0,13+/-0,01
+    - MAE: 908,11+/-129,11
 
 # 7. Business Results
 
-# 8. Conclusions
-
-# 9. Lessons Learned
-
-# 10. Next Steps to Improve
-
-# LICENSE
-
-# All Rights Reserved - Comunidade DS 2021
+    - Total sum of predictions R$ 280,123,396.28
+    - Total sum of worst scenario R$ 279,191,646.07
+    - Total sum of best scenario R$ 281,055,146.48
